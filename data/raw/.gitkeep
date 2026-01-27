@@ -1,0 +1,2 @@
+# This directory contains raw Kaggle data (gitignored)
+# Run 'make download_data' to populate

@@ -1,0 +1,2 @@
+# This directory contains generated reports (gitignored)
+# Run 'make drift_report' or 'make simulate' to generate
