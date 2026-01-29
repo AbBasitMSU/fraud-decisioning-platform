@@ -1,3 +1,1 @@
-"""
-Test suite for Fraud Decisioning Platform.
-"""
+# Tests package

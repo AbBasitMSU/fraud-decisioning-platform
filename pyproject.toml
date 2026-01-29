@@ -1,0 +1,128 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fraud-decisioning-platform"
+version = "1.0.0"
+description = "Production-grade ML fraud detection with real-time scoring and intelligent alert triage"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Abdul Basit", email = "basit@example.com"}
+]
+keywords = [
+    "fraud-detection",
+    "machine-learning",
+    "lightgbm",
+    "xgboost",
+    "fastapi",
+    "streamlit"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "scikit-learn>=1.3.0",
+    "lightgbm>=4.0.0",
+    "xgboost>=2.0.0",
+    "plotly>=5.15.0",
+    "streamlit>=1.28.0",
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.25.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+ml = [
+    "optuna>=3.4.0",
+    "shap>=0.43.0",
+    "imbalanced-learn>=0.11.0",
+]
+monitoring = [
+    "evidently>=0.4.0",
+    "mlflow>=2.8.0",
+]
+all = [
+    "fraud-decisioning-platform[dev,ml,monitoring]",
+]
+
+[project.urls]
+Homepage = "https://github.com/AbBasitMSU/fraud-decisioning-platform"
+Documentation = "https://github.com/AbBasitMSU/fraud-decisioning-platform#readme"
+Repository = "https://github.com/AbBasitMSU/fraud-decisioning-platform"
+Issues = "https://github.com/AbBasitMSU/fraud-decisioning-platform/issues"
+
+[project.scripts]
+fdp-api = "src.service.api:main"
+fdp-train = "src.model.train:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.black]
+line-length = 120
+target-version = ["py310", "py311"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.git
+    | \.venv
+    | build
+    | dist
+    | notebooks
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+skip = [".git", ".venv", "build", "dist"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = ["*/tests/*", "*/__init__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
