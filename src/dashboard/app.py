@@ -1826,27 +1826,22 @@ elif page == "🔬 Feature Deep Dive":
     imp = pd.DataFrame({'feature': features, 'importance': model.feature_importances_})
     imp = imp.sort_values('importance', ascending=False)
     
-    col1, col2 = st.columns([3, 1])
+    top_n = st.slider("📊 Show top N features", 10, min(50, len(features)), 20)
     
-    with col2:
-        top_n = st.slider("📊 Show top N", 10, min(50, len(features)), 20)
-        color_scheme = st.selectbox("🎨 Color", ["Purples", "Blues", "Greens", "Reds"])
-    
-    with col1:
-        fig = px.bar(
-            imp.head(top_n), y='feature', x='importance', orientation='h',
-            color='importance', color_continuous_scale=color_scheme,
-            text=imp.head(top_n)['importance'].apply(lambda x: f"{x:.4f}")
-        )
-        fig.update_traces(textposition='outside')
-        fig.update_layout(
-            height=max(500, top_n * 28),
-            yaxis={'categoryorder': 'total ascending'},
-            paper_bgcolor='rgba(0,0,0,0)',
-            coloraxis_showscale=False,
-            title=f"🏆 Top {top_n} Feature Importances"
-        )
-        st.plotly_chart(fig, use_container_width=True)
+    fig = px.bar(
+        imp.head(top_n), y='feature', x='importance', orientation='h',
+        color='importance', color_continuous_scale='Viridis',
+        text=imp.head(top_n)['importance'].apply(lambda x: f"{x:.4f}")
+    )
+    fig.update_traces(textposition='outside')
+    fig.update_layout(
+        height=max(500, top_n * 25),
+        yaxis={'categoryorder': 'total ascending'},
+        paper_bgcolor='rgba(0,0,0,0)',
+        coloraxis_showscale=False,
+        title=f"🏆 Top {top_n} Feature Importances"
+    )
+    st.plotly_chart(fig, use_container_width=True)
     
     # Feature categories
     st.markdown('<div class="section-header">📊 Feature Category Analysis</div>', unsafe_allow_html=True)
