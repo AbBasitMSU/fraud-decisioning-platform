@@ -2109,7 +2109,7 @@ st.markdown("""
         <span class="tech-badge">Docker</span>
     </div>
     <p style="margin-top: 1.5rem; color: #94a3b8; font-size: 0.8rem;">
-        Built for Production • Interview-Ready • Top 1% Quality
+        Built for Production
     </p>
 </div>
 """, unsafe_allow_html=True)
