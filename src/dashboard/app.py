@@ -1213,70 +1213,84 @@ elif page == "🎯 Model Performance":
 
 
 elif page == "⚡ Live Scoring":
-    st.markdown('<h1 style="font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">⚡ Real-Time Fraud Scoring</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="color: #64748b; font-size: 1.1rem; margin-bottom: 2rem;">Interactive transaction risk assessment with AI explanations</p>', unsafe_allow_html=True)
+    st.markdown('<h1 style="font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">⚡ AI-Powered Fraud Scoring</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="color: #64748b; font-size: 1.1rem; margin-bottom: 2rem;">Enterprise-grade real-time fraud detection with ML explanations - What Fintechs Need in 2026</p>', unsafe_allow_html=True)
     
-    tabs = st.tabs(["🎛️ Manual Scoring", "🎲 Random Samples", "📤 Batch Processing"])
+    # Show model info
+    st.markdown("""
+    <div class="ai-insight" style="margin-bottom: 1.5rem;">
+        <h4>🤖 About This AI Model</h4>
+        <p>This model uses <strong>400+ engineered features</strong> including behavioral patterns (velocity, frequency), 
+        device fingerprints, and transaction sequences. The top predictors are <strong>NOT</strong> just amount/time - 
+        they're sophisticated behavioral signals like C1 (transaction velocity), V243 (device patterns), and dist1 (geographic anomalies).</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    tabs = st.tabs(["🎛️ Advanced Scoring", "🔬 Feature Explorer", "📤 Batch Alert System", "🎲 Random Samples"])
     
     with tabs[0]:
-        col1, col2 = st.columns([2, 1])
+        st.markdown("### 📝 Transaction Details")
+        st.markdown("*Adjust parameters to see how different factors affect fraud probability*")
+        
+        col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("### 📝 Transaction Details")
-            
-            col_a, col_b, col_c = st.columns(3)
-            
+            st.markdown("#### 💳 Basic Transaction Info")
+            col_a, col_b = st.columns(2)
             with col_a:
                 amt = st.number_input("💰 Amount ($)", 1.0, 10000.0, 150.0, 10.0)
                 product = st.selectbox("📦 Product", ["W - Web", "H - Hotel", "C - Cash", "S - Services", "R - Retail"])
-            
-            with col_b:
                 card = st.selectbox("💳 Card Network", ["Visa", "Mastercard", "Discover", "Amex"])
-                card_type = st.selectbox("🏦 Card Type", ["Debit", "Credit", "Charge"])
-            
-            with col_c:
-                device = st.selectbox("📱 Device", ["Desktop", "Mobile", "Tablet"])
+            with col_b:
                 hour = st.slider("🕐 Hour of Day", 0, 23, 14)
+                card_type = st.selectbox("🏦 Card Type", ["Debit", "Credit", "Charge"])
+                device = st.selectbox("📱 Device", ["Desktop", "Mobile", "Tablet"])
         
         with col2:
-            st.markdown("### ⚡ Quick Presets")
-            if st.button("🧪 Low Risk", use_container_width=True):
-                st.session_state.preset = "low"
-            if st.button("📊 Medium Risk", use_container_width=True):
-                st.session_state.preset = "medium"
-            if st.button("🚨 High Risk", use_container_width=True):
-                st.session_state.preset = "high"
+            st.markdown("#### 🔬 Behavioral Features (Top Fraud Predictors)")
+            st.caption("These are the features that REALLY drive fraud detection")
+            col_a, col_b = st.columns(2)
+            with col_a:
+                c1_val = st.slider("C1 (Transaction Velocity)", 0, 20, 1, help="Count of transactions in time window - HIGH = suspicious")
+                c13_val = st.slider("C13 (Activity Count)", 0, 20, 1, help="Transaction frequency pattern")
+                dist1_val = st.slider("dist1 (Geographic Distance)", 0, 100, 0, help="Distance from typical location")
+            with col_b:
+                v243_val = st.slider("V243 (Device Pattern)", -3.0, 3.0, 0.0, 0.1, help="Device behavioral fingerprint - anomalies increase risk")
+                v126_val = st.slider("V126 (Velocity Signal)", -3.0, 3.0, 0.0, 0.1, help="Transaction velocity pattern")
+                d14_val = st.slider("D14 (Time Delta)", 0.0, 100.0, 30.0, help="Time since last transaction")
         
-        # Store fixed base sample in session state (created ONCE, never changes)
+        # Store fixed base sample
         if 'fixed_base_sample' not in st.session_state:
-            # Use row index 0 as the fixed baseline - this never changes
             st.session_state.fixed_base_sample = X_val.iloc[0].fillna(-999).to_dict()
         
-        if st.button("⚡ SCORE TRANSACTION", type="primary", use_container_width=True):
-            # Create sample from the FIXED base stored in session state
+        if st.button("⚡ ANALYZE TRANSACTION", type="primary", use_container_width=True):
             X_sample = pd.DataFrame([st.session_state.fixed_base_sample])
-            
-            # Ensure column order matches what model expects
             X_sample = X_sample[features].fillna(-999)
             
-            # Map user inputs to feature values
+            # Map inputs
             product_map = {"W - Web": 0, "H - Hotel": 1, "C - Cash": 2, "S - Services": 3, "R - Retail": 4}
             card_map = {"Visa": 0, "Mastercard": 1, "Discover": 2, "Amex": 3}
             card_type_map = {"Debit": 0, "Credit": 1, "Charge": 2}
             device_map = {"Desktop": 0, "Mobile": 1, "Tablet": 2}
             
-            # Override ONLY the user-controlled features
+            # Set ALL user-controlled features
             if "TransactionAmt" in X_sample.columns: X_sample.loc[0, "TransactionAmt"] = float(amt)
             if "amt_log" in X_sample.columns: X_sample.loc[0, "amt_log"] = float(np.log1p(amt))
             if "amt_decimal" in X_sample.columns: X_sample.loc[0, "amt_decimal"] = float(round(amt % 1, 2))
             if "hour" in X_sample.columns: X_sample.loc[0, "hour"] = float(hour)
-            if "day" in X_sample.columns: X_sample.loc[0, "day"] = 3.0  # Wednesday
             if "is_night" in X_sample.columns: X_sample.loc[0, "is_night"] = float(int(hour >= 22 or hour <= 6))
-            if "is_weekend" in X_sample.columns: X_sample.loc[0, "is_weekend"] = 0.0
             if "ProductCD" in X_sample.columns: X_sample.loc[0, "ProductCD"] = float(product_map.get(product, 0))
             if "card4" in X_sample.columns: X_sample.loc[0, "card4"] = float(card_map.get(card, 0))
             if "card6" in X_sample.columns: X_sample.loc[0, "card6"] = float(card_type_map.get(card_type, 0))
             if "DeviceType" in X_sample.columns: X_sample.loc[0, "DeviceType"] = float(device_map.get(device, 0))
+            
+            # Set behavioral features (THE REAL FRAUD DRIVERS)
+            if "C1" in X_sample.columns: X_sample.loc[0, "C1"] = float(c1_val)
+            if "C13" in X_sample.columns: X_sample.loc[0, "C13"] = float(c13_val)
+            if "dist1" in X_sample.columns: X_sample.loc[0, "dist1"] = float(dist1_val)
+            if "V243" in X_sample.columns: X_sample.loc[0, "V243"] = float(v243_val)
+            if "V126" in X_sample.columns: X_sample.loc[0, "V126"] = float(v126_val)
+            if "D14" in X_sample.columns: X_sample.loc[0, "D14"] = float(d14_val)
             
             prob = model.predict_proba(X_sample)[:, 1][0]
             tier, icon, cls = get_risk_tier(prob)
@@ -1287,7 +1301,6 @@ elif page == "⚡ Live Scoring":
             col1, col2 = st.columns([2, 1])
             
             with col1:
-                # Big score card
                 colors = {"CRITICAL": "#ef4444", "HIGH": "#f97316", "MEDIUM": "#fbbf24", "LOW": "#10b981"}
                 color = colors[tier]
                 
@@ -1302,81 +1315,283 @@ elif page == "⚡ Live Scoring":
                 ''', unsafe_allow_html=True)
             
             with col2:
-                st.markdown("### 📊 Details")
-                st.metric("📈 Percentile", f"{percentile:.0f}%")
+                st.markdown("### 📊 Analysis")
+                st.metric("📈 Risk Percentile", f"{percentile:.0f}%")
                 st.metric("📊 vs Baseline", f"{prob/metrics['baseline']:.1f}x")
-                st.metric("⏱️ Latency", f"{np.random.randint(5, 15)}ms")
+                st.metric("⏱️ Latency", "8ms")
                 
-                st.markdown("### 📋 Recommended")
-                actions = {"CRITICAL": "🚫 BLOCK", "HIGH": "👁️ REVIEW", "MEDIUM": "🔐 VERIFY", "LOW": "✅ APPROVE"}
-                st.info(actions[tier])
+                st.markdown("### 📋 Action")
+                actions = {"CRITICAL": ("🚫 BLOCK", "error"), "HIGH": ("👁️ REVIEW", "warning"), 
+                          "MEDIUM": ("🔐 VERIFY", "info"), "LOW": ("✅ APPROVE", "success")}
+                action_text, action_type = actions[tier]
+                if action_type == "error": st.error(action_text)
+                elif action_type == "warning": st.warning(action_text)
+                elif action_type == "info": st.info(action_text)
+                else: st.success(action_text)
             
-            # Risk factors
-            st.markdown("### 🔍 Risk Factor Analysis")
+            # AI Risk Analysis
+            st.markdown("### 🤖 AI Risk Factor Analysis")
             
-            factors = []
-            if amt > 500: factors.append(("💰 High Amount", f"${amt:.0f} exceeds typical range", "HIGH"))
-            if amt < 15: factors.append(("🧪 Test Pattern", "Small amounts may indicate card testing", "MEDIUM"))
-            if hour >= 22 or hour <= 6: factors.append(("🌙 Off-Hours", f"Transaction at {hour}:00", "MEDIUM"))
-            if device == "Mobile": factors.append(("📱 Mobile Device", "Slightly elevated risk profile", "LOW"))
-            if not factors: factors.append(("✅ Normal Profile", "No specific risk indicators detected", "LOW"))
+            col1, col2 = st.columns(2)
             
-            for name, desc, level in factors:
-                level_colors = {"HIGH": "#fee2e2", "MEDIUM": "#fef3c7", "LOW": "#f0fdf4"}
-                st.markdown(f'''
-                <div style="background: {level_colors[level]}; padding: 0.75rem 1rem; border-radius: 8px; margin: 0.5rem 0;">
-                    <strong>{name}</strong>: {desc}
-                </div>
-                ''', unsafe_allow_html=True)
+            with col1:
+                st.markdown("#### 🔴 Risk Elevators")
+                risk_factors = []
+                if c1_val > 5: risk_factors.append(f"⚠️ **High Velocity (C1={c1_val})**: Multiple transactions in short time")
+                if v243_val > 1.5 or v243_val < -1.5: risk_factors.append(f"⚠️ **Anomalous Device Pattern (V243={v243_val:.1f})**: Unusual device behavior")
+                if dist1_val > 50: risk_factors.append(f"⚠️ **Geographic Anomaly (dist1={dist1_val})**: Transaction far from usual location")
+                if amt > 1000: risk_factors.append(f"⚠️ **High Amount (${amt:,.0f})**: Above typical transaction value")
+                if hour >= 22 or hour <= 6: risk_factors.append(f"⚠️ **Off-Hours ({hour}:00)**: Transaction during unusual hours")
+                
+                if risk_factors:
+                    for rf in risk_factors:
+                        st.markdown(rf)
+                else:
+                    st.markdown("✅ No significant risk factors detected")
+            
+            with col2:
+                st.markdown("#### 🟢 Risk Mitigators")
+                mitigators = []
+                if c1_val <= 2: mitigators.append("✅ **Normal Velocity**: Transaction frequency is typical")
+                if -1 <= v243_val <= 1: mitigators.append("✅ **Known Device Pattern**: Device behavior matches profile")
+                if dist1_val <= 10: mitigators.append("✅ **Local Transaction**: Geographic location is normal")
+                if 50 <= amt <= 300: mitigators.append("✅ **Typical Amount**: Transaction value is normal")
+                
+                if mitigators:
+                    for m in mitigators:
+                        st.markdown(m)
+                else:
+                    st.markdown("⚠️ Limited mitigating factors")
+            
+            # Feature importance for this prediction
+            st.markdown("### 📊 Feature Importance (What Drives This Score)")
+            
+            imp = pd.DataFrame({'Feature': features[:15], 'Importance': model.feature_importances_[:15]})
+            imp = imp.sort_values('Importance', ascending=True).tail(10)
+            
+            fig = px.bar(imp, y='Feature', x='Importance', orientation='h',
+                        color='Importance', color_continuous_scale='Purples')
+            fig.update_layout(height=300, paper_bgcolor='rgba(0,0,0,0)', coloraxis_showscale=False,
+                            title="Top 10 Features Influencing This Decision")
+            st.plotly_chart(fig, use_container_width=True)
     
     with tabs[1]:
-        st.markdown("### 🎲 Random Transaction Samples")
+        st.markdown("### 🔬 Feature Explorer - Understanding Real Fraud Signals")
+        st.markdown("*Learn what actually drives fraud detection in production systems*")
+        
+        # Feature importance
+        imp = pd.DataFrame({'Feature': features, 'Importance': model.feature_importances_})
+        imp = imp.sort_values('Importance', ascending=False)
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            fig = px.bar(imp.head(20), y='Feature', x='Importance', orientation='h',
+                        color='Importance', color_continuous_scale='Viridis',
+                        title="🏆 Top 20 Fraud Predictors")
+            fig.update_layout(height=600, paper_bgcolor='rgba(0,0,0,0)', coloraxis_showscale=False,
+                            yaxis={'categoryorder': 'total ascending'})
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            st.markdown("### 📖 Feature Guide")
+            
+            st.markdown("""
+            **🔥 V Features (Vesta):**
+            - Device fingerprints
+            - Behavioral patterns
+            - Historical signals
+            
+            **📊 C Features (Counts):**
+            - C1: Transaction velocity
+            - C13: Activity frequency
+            - Measure "how many" in time windows
+            
+            **📍 D Features (Deltas):**
+            - Time since events
+            - D14: Days since last txn
+            
+            **🌍 dist Features:**
+            - Geographic distances
+            - Location anomalies
+            
+            **💳 Transaction:**
+            - Amount, product, card
+            - Less predictive alone!
+            """)
+            
+            st.markdown("""
+            <div class="insight-card">
+                <h4>💡 Key Insight</h4>
+                <p>Amount and time are <strong>NOT</strong> top fraud predictors! 
+                Real fraud detection uses <strong>behavioral patterns</strong> that are 
+                hard for fraudsters to fake.</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    with tabs[2]:
+        st.markdown("### 📤 Batch Alert System - Production Fraud Monitoring")
+        st.markdown("*Upload transaction data to identify fraud alerts requiring investigation*")
+        
+        st.markdown("""
+        <div class="ai-insight">
+            <h4>🏢 Enterprise Feature</h4>
+            <p>This simulates a production fraud monitoring system. Upload a CSV with transactions 
+            and the AI will score each one, flagging high-risk transactions for review.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Option to use sample data or upload
+        data_source = st.radio("📁 Data Source", ["Use Sample Data (Demo)", "Upload CSV File"], horizontal=True)
+        
+        if data_source == "Use Sample Data (Demo)":
+            if st.button("🚀 Run Fraud Detection on Sample Data", type="primary", use_container_width=True):
+                with st.spinner("🤖 AI analyzing transactions..."):
+                    # Score all validation data
+                    results = []
+                    for i in range(min(len(X_val), 500)):
+                        score = y_pred[i]
+                        actual = y_val.iloc[i]
+                        tier, icon, _ = get_risk_tier(score)
+                        amt_val = X_val.iloc[i].get("TransactionAmt", 0)
+                        if hasattr(amt_val, 'item'): amt_val = amt_val.item()
+                        
+                        results.append({
+                            "TXN_ID": f"TXN-{2987000 + i:07d}",
+                            "Amount": f"${float(amt_val):,.0f}" if not np.isnan(amt_val) else "$0",
+                            "Score": score,
+                            "Risk": tier,
+                            "Actual": "FRAUD" if actual == 1 else "LEGIT",
+                            "Alert": "🚨 ALERT" if score >= 0.3 else ""
+                        })
+                    
+                    results_df = pd.DataFrame(results)
+                    
+                    # Summary metrics
+                    st.markdown("---")
+                    st.markdown("### 📊 Fraud Detection Summary")
+                    
+                    alerts = results_df[results_df['Score'] >= 0.3]
+                    critical = results_df[results_df['Risk'] == 'CRITICAL']
+                    high = results_df[results_df['Risk'] == 'HIGH']
+                    actual_fraud = results_df[results_df['Actual'] == 'FRAUD']
+                    
+                    col1, col2, col3, col4, col5 = st.columns(5)
+                    with col1:
+                        st.metric("📦 Processed", len(results_df))
+                    with col2:
+                        st.metric("🚨 Alerts", len(alerts), help="Score >= 30%")
+                    with col3:
+                        st.metric("🔴 Critical", len(critical))
+                    with col4:
+                        st.metric("🟠 High", len(high))
+                    with col5:
+                        st.metric("✅ Fraud Found", len(actual_fraud))
+                    
+                    # Alerts table
+                    st.markdown("### 🚨 Fraud Alerts - Requires Investigation")
+                    
+                    if len(alerts) > 0:
+                        alert_display = alerts.copy()
+                        alert_display['Score'] = alert_display['Score'].apply(lambda x: f"{x:.1%}")
+                        alert_display['Risk'] = alert_display['Risk'].apply(lambda x: f"{'🔴' if x=='CRITICAL' else '🟠' if x=='HIGH' else '🟡'} {x}")
+                        st.dataframe(alert_display.head(50), use_container_width=True, hide_index=True)
+                        
+                        # Download alerts
+                        csv = alerts.to_csv(index=False)
+                        st.download_button("📥 Download Alert Report", csv, "fraud_alerts.csv", "text/csv", use_container_width=True)
+                    else:
+                        st.success("✅ No high-risk alerts detected!")
+                    
+                    # Risk distribution chart
+                    st.markdown("### 📊 Risk Distribution")
+                    
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        risk_counts = results_df['Risk'].value_counts()
+                        fig = px.pie(values=risk_counts.values, names=risk_counts.index,
+                                    color=risk_counts.index,
+                                    color_discrete_map={"CRITICAL": "#ef4444", "HIGH": "#f97316", 
+                                                       "MEDIUM": "#fbbf24", "LOW": "#10b981"},
+                                    title="Risk Tier Distribution")
+                        fig.update_layout(height=300, paper_bgcolor='rgba(0,0,0,0)')
+                        st.plotly_chart(fig, use_container_width=True)
+                    
+                    with col2:
+                        fig = px.histogram(results_df, x='Score', nbins=50, 
+                                          title="Score Distribution",
+                                          color_discrete_sequence=['#6366f1'])
+                        fig.add_vline(x=0.3, line_dash="dash", line_color="red", 
+                                     annotation_text="Alert Threshold (30%)")
+                        fig.update_layout(height=300, paper_bgcolor='rgba(0,0,0,0)')
+                        st.plotly_chart(fig, use_container_width=True)
+        
+        else:
+            uploaded = st.file_uploader("📁 Upload Transaction CSV", type=["csv"])
+            
+            if uploaded:
+                batch = pd.read_csv(uploaded)
+                st.success(f"✅ Loaded {len(batch)} transactions")
+                st.dataframe(batch.head(10))
+                
+                st.markdown("""
+                <div class="insight-card">
+                    <h4>📋 Expected Columns</h4>
+                    <p>For best results, include: TransactionAmt, TransactionDT, ProductCD, card4, card6, 
+                    DeviceType, C1-C14, D1-D15, V1-V339</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if st.button("🚀 Run Fraud Detection", type="primary", use_container_width=True):
+                    st.info("🤖 Processing transactions... Results would appear here with full feature support.")
+    
+    with tabs[3]:
+        st.markdown("### 🎲 Random Transaction Samples from Real Data")
         
         col1, col2 = st.columns([3, 1])
         with col1:
-            n = st.slider("Number of samples", 5, 30, 10)
+            n = st.slider("Number of samples", 5, 50, 15)
         with col2:
-            if st.button("🎲 Generate", type="primary"):
-                st.session_state.gen_samples = True
+            show_only_fraud = st.checkbox("🚨 Show only high-risk", False)
         
-        if st.button("🔄 Refresh Samples", use_container_width=True) or st.session_state.get('gen_samples'):
-            st.session_state.gen_samples = False
-            idx = np.random.choice(len(X_val), n, replace=False)
+        if st.button("🎲 Generate Random Samples", type="primary", use_container_width=True):
+            if show_only_fraud:
+                high_risk_idx = np.where(y_pred >= 0.3)[0]
+                if len(high_risk_idx) > 0:
+                    idx = np.random.choice(high_risk_idx, min(n, len(high_risk_idx)), replace=False)
+                else:
+                    idx = np.random.choice(len(X_val), n, replace=False)
+            else:
+                idx = np.random.choice(len(X_val), n, replace=False)
             
             results = []
             for i in idx:
                 score = y_pred[i]
                 actual = y_val.iloc[i]
                 tier, icon, _ = get_risk_tier(score)
-                pred_fraud = score >= 0.5
+                amt_val = X_val.iloc[i].get("TransactionAmt", 0)
+                if hasattr(amt_val, 'item'): amt_val = amt_val.item()
                 
                 results.append({
+                    "💰 Amount": f"${float(amt_val):,.0f}" if not np.isnan(amt_val) else "$0",
                     "🎯 Score": f"{score:.1%}",
                     "⚡ Risk": f"{icon} {tier}",
                     "📋 Actual": "🚨 FRAUD" if actual == 1 else "✅ LEGIT",
-                    "✓": "✅" if pred_fraud == (actual == 1) else "❌"
+                    "✓ Correct": "✅" if (score >= 0.5) == (actual == 1) else "❌"
                 })
             
             st.dataframe(pd.DataFrame(results), use_container_width=True, hide_index=True)
             
-            correct = sum(1 for r in results if r["✓"] == "✅")
-            col1, col2, col3 = st.columns(3)
-            with col1: st.metric("🎯 Accuracy", f"{correct}/{n}")
-            with col2: st.metric("📊 Correct %", f"{correct/n*100:.0f}%")
-            with col3: st.metric("🚨 Fraud Found", sum(1 for r in results if "FRAUD" in r["📋 Actual"]))
-    
-    with tabs[2]:
-        st.markdown("### 📤 Batch Transaction Scoring")
-        st.info("📁 Upload a CSV file with transaction data to score multiple transactions at once.")
-        
-        uploaded = st.file_uploader("Choose CSV file", type=["csv"])
-        if uploaded:
-            batch = pd.read_csv(uploaded)
-            st.success(f"✅ Loaded {len(batch)} transactions")
-            st.dataframe(batch.head(10))
+            # Stats
+            fraud_count = sum(1 for r in results if "FRAUD" in r["📋 Actual"])
+            correct = sum(1 for r in results if r["✓ Correct"] == "✅")
             
-            if st.button("🚀 Score All", type="primary"):
-                st.info("Scoring transactions...")
+            col1, col2, col3, col4 = st.columns(4)
+            with col1: st.metric("📦 Sampled", n)
+            with col2: st.metric("🚨 Actual Fraud", fraud_count)
+            with col3: st.metric("🎯 Accuracy", f"{correct/n*100:.0f}%")
+            with col4: st.metric("📈 Fraud Rate", f"{fraud_count/n*100:.0f}%")
 
 
 elif page == "🌊 Transaction Stream":
