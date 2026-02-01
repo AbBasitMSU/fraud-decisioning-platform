@@ -806,7 +806,8 @@ with st.sidebar:
         "🏢 Ops Simulator",
         "🔬 Feature Deep Dive",
         "🎚️ Threshold Optimizer",
-        "📈 What-If Analysis"
+        "📈 What-If Analysis",
+        "📚 Documentation"
     ], label_visibility="collapsed")
     
     st.markdown("---")
@@ -2084,6 +2085,421 @@ elif page == "📈 What-If Analysis":
         with col2: st.metric("📈 Std Dev", f"{y_pred.std():.3f}")
         with col3: st.metric("🎯 Median", f"{np.median(y_pred):.3f}")
         with col4: st.metric("🔝 Max", f"{y_pred.max():.3f}")
+
+
+elif page == "📚 Documentation":
+    st.markdown('<h1 style="font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">📚 Documentation & Guide</h1>', unsafe_allow_html=True)
+    st.markdown('<p style="color: #64748b; font-size: 1.1rem; margin-bottom: 2rem;">Everything you need to understand this fraud detection platform</p>', unsafe_allow_html=True)
+    
+    tabs = st.tabs(["🏠 What Is This?", "📖 Feature Guide", "🔧 How It Works", "❓ FAQ", "📎 References"])
+    
+    # =========================================================================
+    # TAB 1: WHAT IS THIS?
+    # =========================================================================
+    with tabs[0]:
+        st.markdown("""
+        ## 🛡️ What is the Fraud Decisioning Platform?
+        
+        Imagine you run a bank or payment company. Every day, millions of transactions flow through your system. 
+        **Some of these are fraudulent** — criminals using stolen credit cards, fake accounts, or other schemes to steal money.
+        
+        **The problem:** You can't manually review millions of transactions. You need a smart system that can:
+        1. ⚡ **Instantly score** each transaction (in milliseconds)
+        2. 🎯 **Identify suspicious ones** for human review
+        3. 💰 **Save money** by catching fraud before it happens
+        
+        **That's exactly what this platform does.**
+        
+        ---
+        
+        ### 🤖 How Does AI Help?
+        
+        We use **Machine Learning** (a type of AI) to learn patterns from historical data:
+        
+        | What AI Learns | Example |
+        |----------------|---------|
+        | **Normal behavior** | "This customer usually buys $50-200 items during daytime" |
+        | **Suspicious patterns** | "20 transactions in 5 minutes from different countries" |
+        | **Fraud signatures** | "This device fingerprint was used in previous fraud" |
+        
+        The AI doesn't just look at obvious things like "big purchase = fraud." Real fraud detection uses 
+        **hundreds of behavioral signals** that are nearly impossible for fraudsters to fake.
+        
+        ---
+        
+        ### 🏢 Who Uses Systems Like This?
+        
+        - **Banks** (Chase, Bank of America, HSBC)
+        - **Payment Processors** (Visa, Mastercard, Stripe, PayPal)
+        - **E-commerce** (Amazon, eBay, Shopify stores)
+        - **Fintech Companies** (Square, Venmo, Cash App)
+        
+        This platform demonstrates the **same technology** used by these companies, built with 
+        real-world data from the IEEE Computational Intelligence Society.
+        """)
+        
+        # Key stats
+        st.markdown("---")
+        st.markdown("### 📊 Platform at a Glance")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("🔢 Transactions", f"{total_count:,}", help="Total transactions in the dataset")
+        with col2:
+            st.metric("🎯 Model Accuracy", f"{metrics['auc_roc']:.1%}", help="AUC-ROC score")
+        with col3:
+            st.metric("⚡ Speed", "<10ms", help="Time to score one transaction")
+        with col4:
+            st.metric("📐 Features", f"{len(features)}", help="ML features used for prediction")
+    
+    # =========================================================================
+    # TAB 2: FEATURE GUIDE
+    # =========================================================================
+    with tabs[1]:
+        st.markdown("""
+        ## 📖 Understanding Each Section
+        
+        Here's what each part of the platform does, explained simply:
+        """)
+        
+        sections = [
+            {
+                "icon": "🏠",
+                "name": "Executive Dashboard",
+                "simple": "The home page with key numbers at a glance",
+                "detail": "Shows overall statistics like total transactions, fraud rate, and model performance. Think of it as the 'summary page' a CEO would look at.",
+                "who": "Executives, managers, anyone wanting a quick overview"
+            },
+            {
+                "icon": "📊",
+                "name": "Data Intelligence",
+                "simple": "Explore and understand the transaction data",
+                "detail": "Interactive charts showing how transactions are distributed, patterns by time of day, payment methods, and more. Helps you understand what 'normal' looks like.",
+                "who": "Data analysts, anyone curious about the data"
+            },
+            {
+                "icon": "🎯",
+                "name": "Model Performance",
+                "simple": "How good is our AI at catching fraud?",
+                "detail": "Shows accuracy metrics, ROC curves, and precision/recall. If the model says '500 transactions are fraud,' how many actually are? This page answers that.",
+                "who": "Data scientists, technical evaluators"
+            },
+            {
+                "icon": "⚡",
+                "name": "Live Scoring",
+                "simple": "Test the AI on a transaction right now",
+                "detail": "Enter transaction details (amount, time, device) and see what risk score the AI assigns. Also includes batch processing for scoring many transactions at once.",
+                "who": "Everyone — great for demonstrations"
+            },
+            {
+                "icon": "🌊",
+                "name": "Transaction Stream",
+                "simple": "Watch transactions flow in real-time",
+                "detail": "Simulates a live monitoring dashboard where transactions appear as they happen, color-coded by risk level. Like watching a security monitor.",
+                "who": "Fraud operations teams, demonstrations"
+            },
+            {
+                "icon": "🏢",
+                "name": "Ops Simulator",
+                "simple": "Plan your fraud investigation team",
+                "detail": "If you have 10 analysts who can review 100 cases per day, how many fraud cases will you catch? This simulator helps plan team capacity and calculate ROI.",
+                "who": "Operations managers, finance teams"
+            },
+            {
+                "icon": "🔬",
+                "name": "Feature Deep Dive",
+                "simple": "What makes a transaction look suspicious?",
+                "detail": "Shows which data points (features) the AI considers most important. Spoiler: it's not just the amount — behavioral patterns matter most!",
+                "who": "Data scientists, anyone wanting to understand AI decisions"
+            },
+            {
+                "icon": "🎚️",
+                "name": "Threshold Optimizer",
+                "simple": "Tune how sensitive the fraud detection is",
+                "detail": "If you lower the threshold, you catch more fraud but also get more false alarms. This tool helps find the right balance for your business.",
+                "who": "Product managers, operations teams"
+            },
+            {
+                "icon": "📈",
+                "name": "What-If Analysis",
+                "simple": "Experiment with different scenarios",
+                "detail": "What if transaction amounts double? What if we change our team size? Explore hypothetical scenarios to make better decisions.",
+                "who": "Strategists, planners, curious minds"
+            }
+        ]
+        
+        for section in sections:
+            with st.expander(f"{section['icon']} **{section['name']}** — {section['simple']}", expanded=False):
+                st.markdown(f"**What it does:** {section['detail']}")
+                st.markdown(f"**Best for:** {section['who']}")
+    
+    # =========================================================================
+    # TAB 3: HOW IT WORKS
+    # =========================================================================
+    with tabs[2]:
+        st.markdown("""
+        ## 🔧 How Does Fraud Detection Work?
+        
+        Let's break down the technology in simple terms:
+        
+        ---
+        
+        ### Step 1: Collect Data 📥
+        
+        Every transaction generates data:
+        - **What:** Amount, product type, payment method
+        - **When:** Time, day of week
+        - **Where:** Device, location, IP address
+        - **Who:** Account age, past behavior, email domain
+        
+        We use the **IEEE-CIS Fraud Detection Dataset** which contains 590,000+ real e-commerce transactions 
+        with 400+ data points each.
+        
+        ---
+        
+        ### Step 2: Engineer Features 🔧
+        
+        Raw data isn't enough. We create **smart features** like:
+        
+        | Raw Data | Smart Feature | Why It Matters |
+        |----------|---------------|----------------|
+        | Transaction time | "Is it 3am?" | Fraud often happens at odd hours |
+        | Transaction history | "5 purchases in 1 minute" | Rapid transactions are suspicious |
+        | Location data | "500 miles from usual location" | Geographic anomalies signal fraud |
+        | Device info | "New device + high amount" | Risky combination |
+        
+        ---
+        
+        ### Step 3: Train the AI Model 🧠
+        
+        We show the AI thousands of examples:
+        - "This transaction was **fraud**" ❌
+        - "This transaction was **legitimate**" ✅
+        
+        The AI learns patterns that distinguish fraud from normal transactions. 
+        We use **Gradient Boosting**, a powerful algorithm used by companies like:
+        - Uber (for pricing)
+        - Airbnb (for search ranking)
+        - Microsoft (for Bing search)
+        
+        ---
+        
+        ### Step 4: Score New Transactions ⚡
+        
+        When a new transaction arrives:
+        1. Extract all 400+ features (takes ~1ms)
+        2. Run through the trained model (takes ~5ms)
+        3. Get a **fraud probability** (0% to 100%)
+        4. Assign a **risk tier** (Low/Medium/High/Critical)
+        
+        ---
+        
+        ### Step 5: Take Action 🎬
+        
+        Based on the score:
+        
+        | Risk Level | Score | Action |
+        |------------|-------|--------|
+        | 🟢 **LOW** | <20% | Approve automatically |
+        | 🟡 **MEDIUM** | 20-50% | Request verification (OTP, security question) |
+        | 🟠 **HIGH** | 50-80% | Send to human review queue |
+        | 🔴 **CRITICAL** | >80% | Block immediately |
+        
+        This balance prevents fraud while not annoying legitimate customers.
+        """)
+        
+        # Visual pipeline
+        st.markdown("---")
+        st.markdown("### 🔄 The Complete Pipeline")
+        st.code("""
+    ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+    │  Transaction │ ──▶ │   Feature    │ ──▶ │   ML Model   │ ──▶ │   Decision   │
+    │    Arrives   │     │  Engineering │     │   Scoring    │     │    Engine    │
+    └──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
+           │                    │                    │                    │
+           ▼                    ▼                    ▼                    ▼
+      Amount: $499         amt_log: 6.2         Score: 73%          ⚠️ REVIEW
+      Time: 2:30am         is_night: 1          Tier: HIGH          Send to analyst
+      Device: Mobile       velocity: 5          Confidence: 89%     Flag account
+        """, language="text")
+    
+    # =========================================================================
+    # TAB 4: FAQ
+    # =========================================================================
+    with tabs[3]:
+        st.markdown("## ❓ Frequently Asked Questions")
+        
+        faqs = [
+            {
+                "q": "Why doesn't high amount + midnight always mean fraud?",
+                "a": """Great question! In movies, fraud looks obvious. In reality, fraudsters are smarter. 
+                
+**The data shows:**
+- High amount transactions: Only ~5% are fraud
+- Night transactions: Only ~4% are fraud
+
+Real fraud is detected through **behavioral patterns** that are hard to fake:
+- Transaction velocity (many purchases quickly)
+- Device fingerprint anomalies  
+- Geographic impossibilities (NY then Tokyo in 1 hour)
+- Account behavior changes
+
+That's why our top features are V243, C1, dist1 — not just amount and time."""
+            },
+            {
+                "q": "What is AUC-ROC and why should I care?",
+                "a": """**AUC-ROC** (Area Under the Receiver Operating Characteristic Curve) measures how good the model is at ranking transactions.
+
+**In simple terms:**
+- **AUC = 0.50** → Model is guessing randomly (useless)
+- **AUC = 0.80** → Model is good
+- **AUC = 0.90+** → Model is excellent
+- **AUC = 1.00** → Model is perfect (unrealistic)
+
+Our model achieves **~0.89 AUC**, which is considered excellent for fraud detection."""
+            },
+            {
+                "q": "What is Precision@K?",
+                "a": """If you can only review 500 transactions per day, you want those 500 to be the most likely fraud cases.
+
+**Precision@500** answers: "Of the top 500 scores, how many are actually fraud?"
+
+- If Precision@500 = 40%, then 200 of those 500 are real fraud
+- Random sampling would only catch ~18 fraud cases (at 3.5% fraud rate)
+- That's a **10x improvement** over random!"""
+            },
+            {
+                "q": "Is this real data?",
+                "a": """Yes! We use the **IEEE-CIS Fraud Detection Dataset** from a Kaggle competition sponsored by Vesta Corporation (a real payment processor).
+
+- 590,000+ real e-commerce transactions
+- 400+ anonymized features
+- Real fraud labels
+- Used by 6,000+ teams in the original competition
+
+The data is anonymized to protect privacy, but the patterns are real."""
+            },
+            {
+                "q": "Can fraudsters trick this system?",
+                "a": """Fraud is an **adversarial problem** — fraudsters constantly evolve their tactics. That's why:
+
+1. **Models need regular retraining** with new fraud patterns
+2. **Multiple layers of defense** work better than one
+3. **Human review** catches edge cases AI misses
+4. **Behavioral features** are harder to fake than simple rules
+
+This platform would be one layer in a comprehensive fraud prevention strategy."""
+            },
+            {
+                "q": "What technology stack powers this?",
+                "a": """
+- **Python** — Core programming language
+- **Streamlit** — Interactive web dashboard
+- **scikit-learn** — Machine learning (Gradient Boosting)
+- **Pandas/NumPy** — Data processing
+- **Plotly** — Interactive visualizations
+- **FastAPI** — Production API (available separately)
+- **Docker** — Containerization for deployment
+
+All open-source, production-ready technologies."""
+            }
+        ]
+        
+        for faq in faqs:
+            with st.expander(f"**{faq['q']}**"):
+                st.markdown(faq['a'])
+    
+    # =========================================================================
+    # TAB 5: REFERENCES
+    # =========================================================================
+    with tabs[4]:
+        st.markdown("""
+        ## 📎 References & Resources
+        
+        ### 📊 Dataset
+        
+        | Resource | Description |
+        |----------|-------------|
+        | [IEEE-CIS Fraud Detection (Kaggle)](https://www.kaggle.com/c/ieee-fraud-detection) | Original competition with 590K+ transactions |
+        | [Vesta Corporation](https://www.vesta.io/) | Dataset sponsor, real payment processor |
+        
+        ---
+        
+        ### 📚 Learning Resources
+        
+        **For Non-Technical Readers:**
+        | Resource | Description |
+        |----------|-------------|
+        | [How Machine Learning Detects Fraud (Visa)](https://usa.visa.com/visa-everywhere/blog/bdp/2019/10/03/how-artificial-intelligence-1570072520123.html) | Simple explanation from Visa |
+        | [What is Fraud Detection? (IBM)](https://www.ibm.com/topics/fraud-detection) | Overview of fraud detection concepts |
+        
+        **For Technical Readers:**
+        | Resource | Description |
+        |----------|-------------|
+        | [Gradient Boosting Explained (StatQuest)](https://www.youtube.com/watch?v=3CC4N4z3GJc) | Best video explanation of our algorithm |
+        | [Imbalanced Classification (Google)](https://developers.google.com/machine-learning/data-prep/construct/sampling-splitting/imbalanced-data) | Handling rare fraud cases |
+        | [Feature Engineering for Fraud (Featurebyte)](https://www.featurebyte.com/fraud-detection) | Creating smart features |
+        
+        ---
+        
+        ### 🛠️ Technologies Used
+        
+        | Technology | Purpose | Link |
+        |------------|---------|------|
+        | Python 3.10+ | Programming language | [python.org](https://www.python.org/) |
+        | Streamlit | Dashboard framework | [streamlit.io](https://streamlit.io/) |
+        | scikit-learn | Machine learning | [scikit-learn.org](https://scikit-learn.org/) |
+        | Plotly | Visualizations | [plotly.com](https://plotly.com/) |
+        | Pandas | Data manipulation | [pandas.pydata.org](https://pandas.pydata.org/) |
+        | FastAPI | REST API | [fastapi.tiangolo.com](https://fastapi.tiangolo.com/) |
+        | Docker | Containerization | [docker.com](https://www.docker.com/) |
+        
+        ---
+        
+        ### 📖 Academic References
+        
+        1. **Gradient Boosting:** Friedman, J. H. (2001). "Greedy Function Approximation: A Gradient Boosting Machine." *Annals of Statistics*
+        
+        2. **Fraud Detection Survey:** Abdallah, A., et al. (2016). "Fraud detection system: A survey." *Journal of Network and Computer Applications*
+        
+        3. **Imbalanced Learning:** He, H., & Garcia, E. A. (2009). "Learning from Imbalanced Data." *IEEE Transactions on Knowledge and Data Engineering*
+        
+        ---
+        
+        ### 💼 Industry Standards
+        
+        | Standard | Description |
+        |----------|-------------|
+        | PCI DSS | Payment Card Industry Data Security Standard |
+        | PSD2 SCA | Strong Customer Authentication (EU) |
+        | 3D Secure 2.0 | Visa/Mastercard authentication protocol |
+        
+        ---
+        
+        ### 🔗 Project Links
+        
+        | Link | Description |
+        |------|-------------|
+        | [GitHub Repository](https://github.com/AbBasitMSU/fraud-decisioning-platform) | Source code |
+        | [Live Demo](https://fraud-decisioning-platform.streamlit.app) | Streamlit Cloud deployment |
+        
+        ---
+        
+        ### 📧 Contact
+        
+        Built as a portfolio project demonstrating production-grade ML engineering skills.
+        
+        For questions or collaboration opportunities, reach out via GitHub.
+        """)
+        
+        st.markdown("""
+        <div class="ai-insight" style="margin-top: 2rem;">
+            <h4>💡 A Note on Learning</h4>
+            <p>Fraud detection is a fascinating intersection of <strong>data science</strong>, <strong>business strategy</strong>, 
+            and <strong>security</strong>. Whether you're technical or not, understanding these concepts helps you make better 
+            decisions about protecting financial systems. Keep exploring! 🚀</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 # =============================================================================
