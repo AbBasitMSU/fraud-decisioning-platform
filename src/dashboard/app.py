@@ -1247,15 +1247,36 @@ elif page == "⚡ Live Scoring":
             if st.button("🚨 High Risk", use_container_width=True):
                 st.session_state.preset = "high"
         
+        # Store fixed base sample in session state (created ONCE, never changes)
+        if 'fixed_base_sample' not in st.session_state:
+            # Use row index 0 as the fixed baseline - this never changes
+            st.session_state.fixed_base_sample = X_val.iloc[0].fillna(-999).to_dict()
+        
         if st.button("⚡ SCORE TRANSACTION", type="primary", use_container_width=True):
-            # Get base sample and modify
-            idx = np.random.randint(0, len(X_val))
-            X_sample = X_val.iloc[[idx]].copy()
+            # Create sample from the FIXED base stored in session state
+            X_sample = pd.DataFrame([st.session_state.fixed_base_sample])
             
-            if "TransactionAmt" in X_sample.columns: X_sample["TransactionAmt"] = amt
-            if "amt_log" in X_sample.columns: X_sample["amt_log"] = np.log1p(amt)
-            if "hour" in X_sample.columns: X_sample["hour"] = hour
-            if "is_night" in X_sample.columns: X_sample["is_night"] = int(hour >= 22 or hour <= 6)
+            # Ensure column order matches what model expects
+            X_sample = X_sample[features].fillna(-999)
+            
+            # Map user inputs to feature values
+            product_map = {"W - Web": 0, "H - Hotel": 1, "C - Cash": 2, "S - Services": 3, "R - Retail": 4}
+            card_map = {"Visa": 0, "Mastercard": 1, "Discover": 2, "Amex": 3}
+            card_type_map = {"Debit": 0, "Credit": 1, "Charge": 2}
+            device_map = {"Desktop": 0, "Mobile": 1, "Tablet": 2}
+            
+            # Override ONLY the user-controlled features
+            if "TransactionAmt" in X_sample.columns: X_sample.loc[0, "TransactionAmt"] = float(amt)
+            if "amt_log" in X_sample.columns: X_sample.loc[0, "amt_log"] = float(np.log1p(amt))
+            if "amt_decimal" in X_sample.columns: X_sample.loc[0, "amt_decimal"] = float(round(amt % 1, 2))
+            if "hour" in X_sample.columns: X_sample.loc[0, "hour"] = float(hour)
+            if "day" in X_sample.columns: X_sample.loc[0, "day"] = 3.0  # Wednesday
+            if "is_night" in X_sample.columns: X_sample.loc[0, "is_night"] = float(int(hour >= 22 or hour <= 6))
+            if "is_weekend" in X_sample.columns: X_sample.loc[0, "is_weekend"] = 0.0
+            if "ProductCD" in X_sample.columns: X_sample.loc[0, "ProductCD"] = float(product_map.get(product, 0))
+            if "card4" in X_sample.columns: X_sample.loc[0, "card4"] = float(card_map.get(card, 0))
+            if "card6" in X_sample.columns: X_sample.loc[0, "card6"] = float(card_type_map.get(card_type, 0))
+            if "DeviceType" in X_sample.columns: X_sample.loc[0, "DeviceType"] = float(device_map.get(device, 0))
             
             prob = model.predict_proba(X_sample)[:, 1][0]
             tier, icon, cls = get_risk_tier(prob)
