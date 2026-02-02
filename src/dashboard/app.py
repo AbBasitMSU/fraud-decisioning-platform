@@ -2,10 +2,6 @@
 Fraud Decisioning Platform - Enterprise Dashboard
 ==================================================
 Production-Grade ML Platform for Real-Time Fraud Detection
-- Real-time transaction scoring
-- Interactive analytics and reporting
-- Operations capacity planning
-- Model performance monitoring
 """
 
 import streamlit as st
@@ -45,19 +41,24 @@ st.set_page_config(
 )
 
 # =============================================================================
-# PROFESSIONAL CSS - ENTERPRISE DESIGN
+# PROFESSIONAL CSS WITH COLORS (NO EMOJIS)
 # =============================================================================
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
     :root {
-        --primary: #1e40af;
-        --primary-light: #3b82f6;
-        --secondary: #475569;
-        --success: #059669;
-        --warning: #d97706;
-        --danger: #dc2626;
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-light: #818cf8;
+        --secondary: #8b5cf6;
+        --success: #10b981;
+        --success-light: #34d399;
+        --warning: #f59e0b;
+        --warning-light: #fbbf24;
+        --danger: #ef4444;
+        --danger-light: #f87171;
+        --info: #3b82f6;
         --dark: #0f172a;
         --gray-900: #1e293b;
         --gray-700: #334155;
@@ -68,15 +69,18 @@ st.markdown("""
     }
     
     .stApp {
-        background: #f8fafc;
+        background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #faf5ff 100%);
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
-    /* Clean Header */
+    /* Page Headers */
     .page-header {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--gray-900);
+        font-size: 2.25rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         margin-bottom: 0.5rem;
         letter-spacing: -0.02em;
     }
@@ -88,17 +92,19 @@ st.markdown("""
         font-weight: 400;
     }
     
-    /* Professional Cards */
+    /* Metric Cards with Colors */
     .metric-card {
-        background: var(--white);
-        border-radius: 12px;
+        background: linear-gradient(135deg, var(--white) 0%, #f8fafc 100%);
+        border-radius: 16px;
         padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        border: 1px solid var(--gray-100);
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.1);
+        transition: all 0.3s ease;
     }
     
     .metric-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
     }
     
     .metric-label {
@@ -117,30 +123,42 @@ st.markdown("""
         line-height: 1.2;
     }
     
-    .metric-delta {
-        font-size: 0.8rem;
-        font-weight: 500;
-        margin-top: 0.25rem;
-    }
+    .metric-value.primary { color: var(--primary); }
+    .metric-value.success { color: var(--success); }
+    .metric-value.warning { color: var(--warning); }
+    .metric-value.danger { color: var(--danger); }
     
-    .delta-positive { color: var(--success); }
-    .delta-negative { color: var(--danger); }
-    
-    /* Risk Badges */
+    /* Risk Badges with Colors */
     .risk-badge {
         display: inline-block;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        font-weight: 600;
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
+        font-weight: 700;
         font-size: 0.875rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
     
-    .risk-critical { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-    .risk-high { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
-    .risk-medium { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
-    .risk-low { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .risk-critical { 
+        background: linear-gradient(135deg, #dc2626, #b91c1c); 
+        color: white; 
+        box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    }
+    .risk-high { 
+        background: linear-gradient(135deg, #ea580c, #c2410c); 
+        color: white;
+        box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);
+    }
+    .risk-medium { 
+        background: linear-gradient(135deg, #d97706, #b45309); 
+        color: white;
+        box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+    }
+    .risk-low { 
+        background: linear-gradient(135deg, #10b981, #059669); 
+        color: white;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
     
     /* Section Headers */
     .section-header {
@@ -148,137 +166,180 @@ st.markdown("""
         font-weight: 600;
         color: var(--gray-900);
         margin: 1.5rem 0 1rem 0;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid var(--gray-100);
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--primary-light);
     }
     
-    /* Info Box */
+    /* Info Box with Color */
     .info-box {
-        background: var(--white);
-        border-radius: 8px;
+        background: linear-gradient(135deg, #eff6ff, #eef2ff);
+        border-radius: 12px;
         padding: 1.25rem;
         border-left: 4px solid var(--primary);
         margin: 1rem 0;
     }
     
     .info-box h4 {
-        color: var(--gray-900);
+        color: var(--primary-dark);
         margin: 0 0 0.5rem 0;
         font-size: 0.9rem;
         font-weight: 600;
     }
     
     .info-box p {
-        color: var(--gray-500);
+        color: var(--gray-700);
         margin: 0;
         font-size: 0.875rem;
         line-height: 1.6;
     }
     
-    /* Status Indicator */
+    /* Status Badge */
     .status-badge {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.375rem 0.75rem;
-        border-radius: 6px;
-        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
         font-weight: 600;
     }
     
-    .status-active { background: #dcfce7; color: #166534; }
-    .status-warning { background: #fef3c7; color: #92400e; }
-    .status-error { background: #fee2e2; color: #991b1b; }
+    .status-active { 
+        background: linear-gradient(135deg, #dcfce7, #bbf7d0); 
+        color: #166534; 
+    }
     
-    /* Clean Buttons */
+    /* Buttons */
     .stButton > button {
-        background: var(--primary);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
         color: white;
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         padding: 0.75rem 1.5rem;
         font-weight: 600;
         font-size: 0.875rem;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
     }
     
     .stButton > button:hover {
-        background: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
     }
     
-    /* Tabs */
+    /* Tabs - Fixed Spacing */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 0;
+        gap: 8px;
         background: var(--white);
-        border-radius: 8px;
-        padding: 0.25rem;
+        border-radius: 12px;
+        padding: 6px;
         border: 1px solid var(--gray-100);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
     
     .stTabs [data-baseweb="tab"] {
-        border-radius: 6px;
+        border-radius: 8px;
         color: var(--gray-500);
         font-weight: 500;
         font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        background: transparent;
     }
     
     .stTabs [aria-selected="true"] {
-        background: var(--primary);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
         color: white;
-    }
-    
-    /* Data Table */
-    .dataframe {
-        font-size: 0.875rem;
     }
     
     /* Score Display */
     .score-display {
-        background: var(--white);
-        border-radius: 12px;
-        padding: 2rem;
+        background: linear-gradient(135deg, var(--white), #f8fafc);
+        border-radius: 20px;
+        padding: 2.5rem;
         text-align: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        border: 1px solid var(--gray-100);
+        box-shadow: 0 10px 40px rgba(99, 102, 241, 0.1);
+        border: 2px solid rgba(99, 102, 241, 0.1);
     }
     
     .score-value {
-        font-size: 3.5rem;
+        font-size: 4rem;
         font-weight: 800;
         line-height: 1;
         margin-bottom: 0.5rem;
     }
     
     .score-label {
-        font-size: 0.875rem;
+        font-size: 1rem;
         color: var(--gray-500);
         font-weight: 500;
     }
     
-    /* Hide Streamlit Branding */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    .stDeployButton {display: none;}
-    
-    /* Sidebar */
+    /* Sidebar Styling */
     .sidebar-brand {
         text-align: center;
         padding: 1.5rem 0;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        border-radius: 16px;
+        margin-bottom: 1rem;
     }
     
     .sidebar-brand h1 {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
         font-weight: 800;
-        color: var(--primary);
+        color: white;
         margin: 0;
     }
     
     .sidebar-brand p {
         font-size: 0.7rem;
-        color: var(--gray-500);
+        color: rgba(255,255,255,0.8);
         text-transform: uppercase;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.15em;
         margin-top: 0.25rem;
+    }
+    
+    /* Data Source Badge */
+    .data-badge {
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .data-badge.kaggle {
+        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+        border: 1px solid #86efac;
+    }
+    
+    .data-badge.sample {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        border: 1px solid #fcd34d;
+    }
+    
+    /* Hide Streamlit Defaults */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    .stDeployButton {display: none;}
+    
+    /* Table Styling */
+    .dataframe {
+        font-size: 0.875rem;
+    }
+    
+    /* Radio Buttons in Sidebar */
+    .stRadio > div {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 0.5rem;
+    }
+    
+    .stRadio label {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .stRadio label:hover {
+        background: var(--gray-100);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -423,7 +484,7 @@ def risk_badge_html(prob):
     return f'<span class="risk-badge {cls}">{tier}</span>'
 
 
-def gauge_chart(value, title, color="#1e40af"):
+def gauge_chart(value, title, color="#6366f1"):
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=value,
@@ -458,17 +519,15 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("---")
-    
     page = st.radio("Navigation", [
-        "Dashboard",
+        "Executive Dashboard",
         "Data Explorer", 
         "Model Performance",
-        "Transaction Scoring",
-        "Monitoring",
-        "Operations",
+        "Live Scoring",
+        "Transaction Stream",
+        "Ops Simulator",
         "Feature Analysis",
-        "Threshold Tuning",
+        "Threshold Optimizer",
         "Scenario Analysis",
         "Documentation"
     ], label_visibility="collapsed")
@@ -479,10 +538,13 @@ with st.sidebar:
     raw_df, source, total_count = load_data()
     
     # Data source indicator
+    source_class = "kaggle" if source == "kaggle" else "sample"
     source_labels = {"kaggle": "Kaggle IEEE-CIS", "sample": "Sample Dataset", "demo": "Demo Data"}
+    source_color = "#166534" if source == "kaggle" else "#92400e"
+    
     st.markdown(f"""
-    <div style="background: #f0fdf4; border-radius: 8px; padding: 0.75rem; text-align: center; border: 1px solid #bbf7d0;">
-        <div style="font-weight: 600; color: #166534; font-size: 0.8rem;">{source_labels[source]}</div>
+    <div class="data-badge {source_class}">
+        <div style="font-weight: 700; color: {source_color}; font-size: 0.85rem;">{source_labels[source]}</div>
         <div style="color: #64748b; font-size: 0.75rem; margin-top: 0.25rem;">{total_count:,} transactions</div>
     </div>
     """, unsafe_allow_html=True)
@@ -496,9 +558,9 @@ with st.sidebar:
     # Quick stats
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("AUC-ROC", f"{metrics['auc_roc']:.3f}")
+        st.metric("AUC", f"{metrics['auc_roc']:.3f}")
     with col2:
-        st.metric("Fraud Rate", f"{raw_df[TARGET_COL].mean():.1%}")
+        st.metric("Fraud", f"{raw_df[TARGET_COL].mean():.1%}")
     
     st.markdown("---")
     
@@ -515,7 +577,7 @@ with st.sidebar:
 # PAGES
 # =============================================================================
 
-if page == "Dashboard":
+if page == "Executive Dashboard":
     st.markdown('<h1 class="page-header">Executive Dashboard</h1>', unsafe_allow_html=True)
     st.markdown('<p class="page-subtitle">Real-time fraud detection overview and key performance indicators</p>', unsafe_allow_html=True)
     
@@ -537,7 +599,7 @@ if page == "Dashboard":
         st.markdown(f'''
         <div class="metric-card">
             <div class="metric-label">Fraud Rate</div>
-            <div class="metric-value">{fraud_rate:.2%}</div>
+            <div class="metric-value danger">{fraud_rate:.2%}</div>
         </div>
         ''', unsafe_allow_html=True)
     
@@ -545,7 +607,7 @@ if page == "Dashboard":
         st.markdown(f'''
         <div class="metric-card">
             <div class="metric-label">Model AUC-ROC</div>
-            <div class="metric-value">{metrics["auc_roc"]:.3f}</div>
+            <div class="metric-value primary">{metrics["auc_roc"]:.3f}</div>
         </div>
         ''', unsafe_allow_html=True)
     
@@ -553,7 +615,7 @@ if page == "Dashboard":
         st.markdown(f'''
         <div class="metric-card">
             <div class="metric-label">Precision @ 500</div>
-            <div class="metric-value">{p500:.1%}</div>
+            <div class="metric-value success">{p500:.1%}</div>
         </div>
         ''', unsafe_allow_html=True)
     
@@ -571,7 +633,7 @@ if page == "Dashboard":
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('<div class="section-header">Performance Metrics</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">Performance at Top K</div>', unsafe_allow_html=True)
         
         k_data = pd.DataFrame([
             {"K": f"Top {k}", "Precision": v['precision'], "Recall": v['recall']}
@@ -579,35 +641,35 @@ if page == "Dashboard":
         ])
         
         fig = px.bar(k_data, x="K", y="Precision", color="Precision",
-                    color_continuous_scale="Blues", text=[f"{p:.0%}" for p in k_data['Precision']])
+                    color_continuous_scale="Purples", text=[f"{p:.0%}" for p in k_data['Precision']])
         fig.update_traces(textposition='outside')
         fig.update_layout(height=300, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                          coloraxis_showscale=False, yaxis_tickformat='.0%', showlegend=False,
-                         title="Precision at Top K Predictions")
+                         title=None)
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
-        st.markdown('<div class="section-header">Model Performance</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">Model Performance Gauges</div>', unsafe_allow_html=True)
         
         col_a, col_b = st.columns(2)
         with col_a:
-            st.plotly_chart(gauge_chart(metrics['auc_roc'], "AUC-ROC", "#1e40af"), use_container_width=True)
+            st.plotly_chart(gauge_chart(metrics['auc_roc'], "AUC-ROC", "#6366f1"), use_container_width=True)
         with col_b:
-            st.plotly_chart(gauge_chart(metrics['auc_pr'], "AUC-PR", "#059669"), use_container_width=True)
+            st.plotly_chart(gauge_chart(metrics['auc_pr'], "AUC-PR", "#10b981"), use_container_width=True)
     
     # Insight
     st.markdown(f'''
     <div class="info-box">
         <h4>Key Insight</h4>
         <p>Model achieves {metrics['auc_roc']:.3f} AUC-ROC. At top 500 predictions, 
-        precision is {p500:.0%} — that is {p500/metrics['baseline']:.0f}x better 
+        precision is {p500:.0%} - that is {p500/metrics['baseline']:.0f}x better 
         than random sampling, significantly improving fraud detection efficiency.</p>
     </div>
     ''', unsafe_allow_html=True)
 
 
 elif page == "Data Explorer":
-    st.markdown('<h1 class="page-header">Data Intelligence</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="page-header">Data Intelligence Center</h1>', unsafe_allow_html=True)
     st.markdown('<p class="page-subtitle">Explore transaction data patterns and distributions</p>', unsafe_allow_html=True)
     
     tabs = st.tabs(["Overview", "Amount Analysis", "Categories", "Temporal", "Correlations"])
@@ -620,7 +682,7 @@ elif page == "Data Explorer":
                 values=raw_df[TARGET_COL].value_counts().values,
                 labels=["Legitimate", "Fraud"],
                 hole=0.6,
-                marker=dict(colors=['#1e40af', '#dc2626']),
+                marker=dict(colors=['#6366f1', '#ef4444']),
                 textinfo='percent+label',
                 textfont_size=12
             )])
@@ -647,7 +709,7 @@ elif page == "Data Explorer":
         
         with col1:
             fig = px.histogram(raw_df, x="TransactionAmt", color=TARGET_COL,
-                color_discrete_map={0: "#1e40af", 1: "#dc2626"},
+                color_discrete_map={0: "#6366f1", 1: "#ef4444"},
                 barmode="overlay", opacity=0.75, nbins=60, log_y=True)
             fig.update_xaxes(range=[0, 800], title="Amount ($)")
             fig.update_layout(height=350, paper_bgcolor='rgba(0,0,0,0)', title="Amount Distribution (Log Scale)")
@@ -655,7 +717,7 @@ elif page == "Data Explorer":
         
         with col2:
             fig = px.box(raw_df, x=TARGET_COL, y="TransactionAmt", color=TARGET_COL,
-                color_discrete_map={0: "#1e40af", 1: "#dc2626"})
+                color_discrete_map={0: "#6366f1", 1: "#ef4444"})
             fig.update_yaxes(range=[0, 500], title="Amount ($)")
             fig.update_layout(height=350, showlegend=False, paper_bgcolor='rgba(0,0,0,0)', title="Amount by Fraud Status")
             st.plotly_chart(fig, use_container_width=True)
@@ -704,15 +766,15 @@ elif page == "Model Performance":
     # Gauges
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.plotly_chart(gauge_chart(metrics['auc_roc'], "AUC-ROC", "#1e40af"), use_container_width=True)
+        st.plotly_chart(gauge_chart(metrics['auc_roc'], "AUC-ROC", "#6366f1"), use_container_width=True)
     with col2:
-        st.plotly_chart(gauge_chart(metrics['auc_pr'], "AUC-PR", "#059669"), use_container_width=True)
+        st.plotly_chart(gauge_chart(metrics['auc_pr'], "AUC-PR", "#10b981"), use_container_width=True)
     with col3:
         p500 = metrics['metrics_k'].get(500, {}).get('precision', 0)
-        st.plotly_chart(gauge_chart(p500, "Precision@500", "#d97706"), use_container_width=True)
+        st.plotly_chart(gauge_chart(p500, "Precision@500", "#f59e0b"), use_container_width=True)
     with col4:
         r500 = metrics['metrics_k'].get(500, {}).get('recall', 0)
-        st.plotly_chart(gauge_chart(r500, "Recall@500", "#dc2626"), use_container_width=True)
+        st.plotly_chart(gauge_chart(r500, "Recall@500", "#ef4444"), use_container_width=True)
     
     # Curves
     st.markdown('<div class="section-header">Performance Curves</div>', unsafe_allow_html=True)
@@ -721,22 +783,22 @@ elif page == "Model Performance":
     
     fig.add_trace(go.Scatter(x=metrics['fpr'], y=metrics['tpr'], mode='lines',
                             name=f"AUC={metrics['auc_roc']:.3f}",
-                            line=dict(color='#1e40af', width=2),
-                            fill='tozeroy', fillcolor='rgba(30,64,175,0.1)'), row=1, col=1)
+                            line=dict(color='#6366f1', width=2),
+                            fill='tozeroy', fillcolor='rgba(99,102,241,0.1)'), row=1, col=1)
     fig.add_trace(go.Scatter(x=[0,1], y=[0,1], mode='lines', name='Random',
                             line=dict(color='#94a3b8', dash='dash')), row=1, col=1)
     
     fig.add_trace(go.Scatter(x=metrics['rec'], y=metrics['prec'], mode='lines',
                             name=f"AUC={metrics['auc_pr']:.3f}",
-                            line=dict(color='#059669', width=2),
-                            fill='tozeroy', fillcolor='rgba(5,150,105,0.1)'), row=1, col=2)
+                            line=dict(color='#10b981', width=2),
+                            fill='tozeroy', fillcolor='rgba(16,185,129,0.1)'), row=1, col=2)
     
     fig.update_layout(height=350, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='white',
                      legend=dict(orientation="h", yanchor="bottom", y=1.02))
     st.plotly_chart(fig, use_container_width=True)
 
 
-elif page == "Transaction Scoring":
+elif page == "Live Scoring":
     st.markdown('<h1 class="page-header">Transaction Scoring</h1>', unsafe_allow_html=True)
     st.markdown('<p class="page-subtitle">Real-time fraud risk assessment</p>', unsafe_allow_html=True)
     
@@ -806,7 +868,7 @@ elif page == "Transaction Scoring":
             col1, col2 = st.columns([2, 1])
             
             with col1:
-                colors = {"CRITICAL": "#dc2626", "HIGH": "#ea580c", "MEDIUM": "#d97706", "LOW": "#059669"}
+                colors = {"CRITICAL": "#dc2626", "HIGH": "#ea580c", "MEDIUM": "#d97706", "LOW": "#10b981"}
                 color = colors[tier]
                 
                 st.markdown(f'''
@@ -882,7 +944,7 @@ elif page == "Transaction Scoring":
             st.dataframe(pd.DataFrame(results), use_container_width=True, hide_index=True)
 
 
-elif page == "Monitoring":
+elif page == "Transaction Stream":
     st.markdown('<h1 class="page-header">Transaction Monitoring</h1>', unsafe_allow_html=True)
     st.markdown('<p class="page-subtitle">Real-time transaction stream and monitoring</p>', unsafe_allow_html=True)
     
@@ -929,7 +991,7 @@ elif page == "Monitoring":
     with col4: st.metric("Avg Score", f"{np.mean([float(t['Score'].replace('%',''))/100 for t in stream_data]):.1%}")
 
 
-elif page == "Operations":
+elif page == "Ops Simulator":
     st.markdown('<h1 class="page-header">Operations Simulator</h1>', unsafe_allow_html=True)
     st.markdown('<p class="page-subtitle">Capacity planning and ROI analysis</p>', unsafe_allow_html=True)
     
@@ -994,7 +1056,7 @@ elif page == "Feature Analysis":
     top_n = st.slider("Number of Features", 10, min(50, len(features)), 20)
     
     fig = px.bar(imp.head(top_n), y='Feature', x='Importance', orientation='h',
-                color='Importance', color_continuous_scale='Blues',
+                color='Importance', color_continuous_scale='Purples',
                 text=imp.head(top_n)['Importance'].apply(lambda x: f"{x:.4f}"))
     fig.update_traces(textposition='outside')
     fig.update_layout(height=max(400, top_n * 22), yaxis={'categoryorder': 'total ascending'},
@@ -1011,7 +1073,7 @@ elif page == "Feature Analysis":
     ''', unsafe_allow_html=True)
 
 
-elif page == "Threshold Tuning":
+elif page == "Threshold Optimizer":
     st.markdown('<h1 class="page-header">Threshold Optimization</h1>', unsafe_allow_html=True)
     st.markdown('<p class="page-subtitle">Balance precision and recall for business needs</p>', unsafe_allow_html=True)
     
@@ -1034,11 +1096,11 @@ elif page == "Threshold Tuning":
     
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=df_t['threshold'], y=df_t['precision'], name='Precision',
-                            line=dict(color='#1e40af', width=2)))
+                            line=dict(color='#6366f1', width=2)))
     fig.add_trace(go.Scatter(x=df_t['threshold'], y=df_t['recall'], name='Recall',
-                            line=dict(color='#059669', width=2)))
+                            line=dict(color='#10b981', width=2)))
     fig.add_trace(go.Scatter(x=df_t['threshold'], y=df_t['f1'], name='F1 Score',
-                            line=dict(color='#d97706', width=2, dash='dash')))
+                            line=dict(color='#f59e0b', width=2, dash='dash')))
     fig.update_layout(title="Performance vs Threshold", xaxis_title="Threshold", yaxis_title="Score",
                      height=350, paper_bgcolor='rgba(0,0,0,0)', yaxis_tickformat='.0%')
     st.plotly_chart(fig, use_container_width=True)
@@ -1177,14 +1239,14 @@ elif page == "Documentation":
         st.markdown("## Feature Guide")
         
         sections = [
-            ("Dashboard", "Executive overview with key metrics and performance indicators"),
+            ("Executive Dashboard", "Executive overview with key metrics and performance indicators"),
             ("Data Explorer", "Interactive exploration of transaction data patterns"),
             ("Model Performance", "Detailed model evaluation metrics and curves"),
-            ("Transaction Scoring", "Real-time risk scoring for individual or batch transactions"),
-            ("Monitoring", "Live transaction stream monitoring"),
-            ("Operations", "Team capacity planning and ROI simulation"),
+            ("Live Scoring", "Real-time risk scoring for individual or batch transactions"),
+            ("Transaction Stream", "Live transaction stream monitoring"),
+            ("Ops Simulator", "Team capacity planning and ROI simulation"),
             ("Feature Analysis", "Understanding which features drive fraud predictions"),
-            ("Threshold Tuning", "Optimize decision thresholds for business needs"),
+            ("Threshold Optimizer", "Optimize decision thresholds for business needs"),
             ("Scenario Analysis", "What-if analysis and scenario comparison")
         ]
         
@@ -1267,8 +1329,8 @@ elif page == "Documentation":
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; padding: 2rem; color: #64748b;">
-    <div style="font-weight: 700; color: #1e293b; font-size: 1.1rem;">Fraud Decisioning Platform</div>
-    <div style="font-size: 0.8rem; margin-top: 0.5rem;">Production-Grade ML System for Real-Time Fraud Detection</div>
+    <div style="font-weight: 700; color: #6366f1; font-size: 1.25rem;">Fraud Decisioning Platform</div>
+    <div style="font-size: 0.875rem; margin-top: 0.5rem;">Production-Grade ML System for Real-Time Fraud Detection</div>
     <div style="font-size: 0.75rem; margin-top: 1rem; color: #94a3b8;">
         Python | Streamlit | scikit-learn | Plotly
     </div>
